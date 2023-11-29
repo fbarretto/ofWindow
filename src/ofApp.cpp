@@ -26,7 +26,7 @@ void ofApp::setup(){
     }
     
     for(int i = 0; i < iteratorLimit; i++){
-        ofLogNotice(dir.getPath(lastIndex));
+//        ofLogNotice(dir.getPath(lastIndex));
         dirList.push_back(dir.getPath(lastIndex));
         
         img.load(dir.getPath(lastIndex));
@@ -44,7 +44,7 @@ void ofApp::update(){
     
     dir.listDir();
     dir.sort();
-    std::cout<<ofGetFrameNum()<<std::endl;
+//    std::cout<<ofGetFrameNum()<<std::endl;
     
     if(300 == ofGetFrameNum()) {
         
@@ -55,12 +55,12 @@ void ofApp::update(){
         }
         
         for(int i = 0; i < iteratorLimit; i++){
-            ofLogNotice(dir.getPath(lastIndex));
+//            ofLogNotice(dir.getPath(lastIndex));
             ofImage img;
             
             img.load(dir.getPath(lastIndex));
             
-            images.push_back(img);
+            tempImages.push_back(img);
             
             lastIndex++;
         }
@@ -76,10 +76,31 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
+    int i = 0;
+    int x = 0;
+    int y = 0;
     if(images.size() > 0) {
         for(ofImage image : images) {
-            image.draw(0, 0, 42);
+            x = 200 * i;
+            
+            if(i > 5 && i <= 11) {
+                y = 200;
+                x = 200 * (i - 6);
+            }
+            if(i > 11 && i <= 17) {
+                y = 400;
+                x = 200 * (i - 12);
+            }
+            if(i > 17 && i < 24) {
+                y = 600;
+                x = 200 * (i - 18);
+            }
+            
+            std::cout<<x<<std::endl;
+            image.resize(200, 200);
+            image.draw(x, y, 42);
+            
+            i++;
         }
     }
 }
