@@ -67,6 +67,10 @@ void ofApp::update(){
         
         images.clear();
         images = tempImages;
+        
+        if(lastIndex + 1 > dir.size()){
+            lastIndex = 0;
+        }
     }
 }
 
