@@ -75,7 +75,7 @@ void ofApp::draw(){
     
     if(images.size() > 0) {
         for(ofImage image : images) {
-            image.draw(ofRandom(512), ofRandom(512), 42);
+            image.draw(0, 0, 42);
         }
     }
 }
