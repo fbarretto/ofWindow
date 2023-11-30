@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxNDISender.h"
 
 class ofApp : public ofBaseApp{
 
@@ -22,5 +23,22 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h) override;
 		void dragEvent(ofDragInfo dragInfo) override;
 		void gotMessage(ofMessage msg) override;
-		
+        void setupNDI();
+    
+//        ofxNDISender ndiSender;
+        ofImage screen;
+        ofPixels    pixels;
+        ofFbo m_fbo;                   // Fbo used for graphics and sending
+    
+        ofxNDISender ndiSender;        // NDI sender
+        std::string senderName;        // Sender name
+        unsigned int senderWidth = 0;  // Width of the sender output
+        unsigned int senderHeight = 0; // Height of the sender output
+        
+        bool bReadback = true;
+        bool bAsync = true;
+        double framerate = 60.0;
+        float opacity = 200;
+    const int WIDTH = 512;
+        const int HEIGHT = 424;
 };

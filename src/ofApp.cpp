@@ -4,6 +4,7 @@
 #include "filesystem"
 #include "vector"
 
+
 namespace fs = std::filesystem;
 
 vector<string> dirList;
@@ -13,6 +14,7 @@ std::string path = "assets/predicted";
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofSetFrameRate(30);
     ofDirectory dir(path);
     ofImage img;
     
@@ -35,19 +37,21 @@ void ofApp::setup(){
         
         lastIndex++;
     }
+    
+    setupNDI();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    vector<ofImage> tempImages;
-    ofDirectory dir(path);
     
-    dir.listDir();
-    dir.sort();
-
-    std::cout<<ofGetFrameNum()<<std::endl;
-    if(ofGetFrameNum() % 20 == 0 ) {
+//    std::cout<<ofGetFrameNum()<<std::endl;
+    if(ofGetFrameNum() % 60 == 0 ) {
+        vector<ofImage> tempImages;
+        ofDirectory dir(path);
         
+        dir.listDir();
+        dir.sort();
+
         int iteratorLimit = 24;
         
         if(dir.size() < lastIndex + 24 ) {
@@ -59,6 +63,7 @@ void ofApp::update(){
             ofImage img;
             
             img.load(dir.getPath(lastIndex));
+            img.resize(200,200);
             
             tempImages.push_back(img);
             
@@ -71,11 +76,15 @@ void ofApp::update(){
         if(lastIndex + 1 > dir.size()){
             lastIndex = 0;
         }
+        std::cout << images.size() << std::endl;
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    
+    m_fbo.begin();
+    
     int i = 0;
     int x = 0;
     int y = 0;
@@ -96,13 +105,49 @@ void ofApp::draw(){
                 x = 200 * (i - 18);
             }
             
-            
-            image.resize(200, 250);
             image.draw(x, y, 42);
             
             i++;
         }
     }
+    
+    //ofDisableDepthTest();
+        m_fbo.end();
+
+        // Draw the fbo result fitted to the display window
+        m_fbo.draw(0, 0, senderWidth, senderHeight);
+        m_fbo.readToPixels(pixels);
+        ofDrawBitmapString(ofGetFrameRate(), 20, 20);
+        ndiSender.send(pixels);
+    
+    
+}
+
+void ofApp::setupNDI() {
+    senderName = "thecode - endless";
+    ofSetWindowTitle(senderName); // show it on the title bar
+
+#ifdef _WIN64
+    cout << "\nofxNDI sender - 64 bit" << endl;
+#else // _WIN64
+    cout << "\nofxNDI sender - 32 bit" << endl;
+#endif // _WIN64
+
+//    cout << ndiSender.GetNDIversion() << " (https://www.ndi.tv/)" << endl;
+
+    // Set the dimensions of the sender output here
+    // This is independent of the display window size.
+    // 4K is set as the starting resolution to help
+    // assess performance with different options.
+    // It can be changed using the 'S' key.
+    senderWidth = WIDTH;
+    senderHeight = HEIGHT;
+
+    // Create an RGBA fbo for collection of data
+    m_fbo.allocate(senderWidth, senderHeight, GL_RGB);
+    pixels.allocate(senderWidth, senderHeight, OF_IMAGE_COLOR);
+    
+    ndiSender.setMetaData("ofxNDISender example", "sender example", "ofxNDI", "0.0.0", "", "", "");
 }
 
 //--------------------------------------------------------------
